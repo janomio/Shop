@@ -1,0 +1,52 @@
+﻿namespace Shop.Common.Models
+{
+	using Newtonsoft.Json;
+	using System;
+
+	public class Product
+	{
+        [JsonProperty("id")]
+        public long Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("price")]
+        public long Price { get; set; }
+
+        [JsonProperty("imageUrl")]
+        public string ImageUrl { get; set; }
+
+        [JsonProperty("lastPurchase")]
+        public DateTimeOffset LastPurchase { get; set; }
+
+        [JsonProperty("lastSale")]
+        public DateTimeOffset LastSale { get; set; }
+
+        [JsonProperty("isAvailabe")]
+        public bool IsAvailabe { get; set; }
+
+        [JsonProperty("stock")]
+        public long Stock { get; set; }
+
+        [JsonProperty("user")]
+        public User User { get; set; }
+
+        [JsonProperty("imageFullPath")]
+        //public Uri ImageFullPath { get; set; }
+        public string ImageFullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.ImageUrl))
+                {
+                    return null;
+                }
+
+                return $"http://192.168.1.101/ShopWeb{this.ImageUrl.Substring(1)}";
+            }
+        }
+
+    }
+
+}

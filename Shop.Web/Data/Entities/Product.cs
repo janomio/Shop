@@ -32,5 +32,18 @@ namespace Shop.Web.Data.Entities
 
 		public User User { get; set; }
 
+		public string ImageFullPath 
+		{ 
+			get
+			{
+				if(string.IsNullOrEmpty(this.ImageUrl))
+				{
+					return null;
+				}
+
+				return $"http://192.168.1.101/ShopWeb{this.ImageUrl.Substring(1)}";
+			}
+		}
+
 	}
 }
