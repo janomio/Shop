@@ -38,8 +38,7 @@
         public Guid ConcurrencyStamp { get; set; }
 
         [JsonProperty("phoneNumber")]
-        //[JsonConverter(typeof(ParseStringConverter))]
-        public long PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
 
         [JsonProperty("phoneNumberConfirmed")]
         public bool PhoneNumberConfirmed { get; set; }

@@ -1,13 +1,32 @@
 ﻿namespace Shop.UIForms.ViewModels
 {
     using GalaSoft.MvvmLight.Command;
+    using Shop.Common.Models;
+    using Shop.Common.Services;
     using Shop.UIForms.Views;
     using System;
     using System.Windows.Input;
     using Xamarin.Forms;
 
-    public class LoginViewModel 
+    public class LoginViewModel : BaseViewModel
     {
+        private ApiService apiService;
+        private bool isRunning;
+        private bool isEnabled;
+
+        public bool IsRunning
+        {
+            get => this.isRunning;
+            set => this.SetValue(ref this.isRunning, value);
+        }
+
+        public bool IsEnabled
+        {
+            get => this.isEnabled;
+            set => this.SetValue(ref this.isEnabled, value);
+        }
+
+
         public string Email { get; set; }
         public string Password { get; set; }
 
@@ -15,8 +34,10 @@
 
         public LoginViewModel()
         {
-            this.Email = "janomio_11@hotmail.com";
-            this.Password = "123";
+            this.apiService = new ApiService();
+            this.Email = "jzuluaga55@gmail.com";
+            this.Password = "123456";
+            this.isEnabled = true;
         }
 
         private async void Login()
@@ -33,16 +54,42 @@
                 return;
             }
 
-            if(!this.Email.Equals("janomio_11@hotmail.com") || !this.Password.Equals("123"))
+            this.IsRunning = true;
+            this.IsEnabled = false;
+
+            var request = new TokenRequest
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Tu email o contraseña son incorrectos", "Aceptar");
+                Password = this.Password,
+                Username = this.Email
+            };
+
+            var url = Application.Current.Resources["UrlAPI"].ToString();
+            var response = await this.apiService.GetTokenAsync(
+                url,
+                "/ShopWeb/Account",
+                "/CreateToken",
+                request);
+
+            this.IsRunning = false;
+            this.IsEnabled = true;
+
+            if (!response.IsSuccess)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error", 
+                    "Email or password incorrect.", 
+                    "Accept");
                 return;
             }
 
-            //await Application.Current.MainPage.DisplayAlert("Error", "OKI", "Aceptar");
-
-            MainViewModel.GetInstance().Products = new ProductsViewModel();
-            await Application.Current.MainPage.Navigation.PushAsync(new ProductsPage());
+            var token = (TokenResponse)response.Result;
+            var mainViewModel = MainViewModel.GetInstance();
+            mainViewModel.UserEmail = this.Email;
+            mainViewModel.UserPassword = this.Password;
+            mainViewModel.Token = token;
+            mainViewModel.Products = new ProductsViewModel();
+            //await Application.Current.MainPage.Navigation.PushAsync(new ProductsPage());
+            Application.Current.MainPage = new MasterPage();
 
         }
     }
